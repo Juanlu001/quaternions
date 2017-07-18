@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 setup(
     name='quaternions',
     version='0.1.0',
-    author='Satellogic',
+    author='Matias Graña',
     author_email='matias@satellogic.com',
     long_description='This is a library for dealing with quaternions in python in a unified way.',
     packages=find_packages(exclude=["tests"]),

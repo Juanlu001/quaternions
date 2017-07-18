@@ -3,9 +3,12 @@ import numpy as np
 
 import quaternions
 
+
 class QuaternionTest(unittest.TestCase):
     # Schaub, Chapter 3
-    schaub_example_dcm = np.array([[.892539, .157379, -.422618], [-.275451, .932257, -.23457], [.357073, .325773, .875426]])
+    schaub_example_dcm = np.array([[.892539, .157379, -.422618],
+                                   [-.275451, .932257, -.23457],
+                                   [.357073, .325773, .875426]])
     schaub_result = np.array([.961798, -.14565, .202665, .112505])
 
     def test_matrix_respects_product(self):
@@ -19,7 +22,8 @@ class QuaternionTest(unittest.TestCase):
 
     def test_from_matrix_twisted(self):
         q = quaternions.Quaternion.from_matrix(QuaternionTest.schaub_example_dcm * [-1, -1, 1])
-        expected = quaternions.Quaternion(*QuaternionTest.schaub_result) * quaternions.Quaternion(0, 0, 0, 1)
+        e1 = quaternions.Quaternion(*QuaternionTest.schaub_result)
+        expected = e1 * quaternions.Quaternion(0, 0, 0, 1)
         np.testing.assert_allclose(expected.coordinates, q.coordinates, atol=1e-5, rtol=0)
 
     def test_from_rotation_vector_to_matrix(self):
@@ -32,8 +36,8 @@ class QuaternionTest(unittest.TestCase):
         np.testing.assert_allclose(expected, q.matrix, atol=1e-5, rtol=0)
 
     def test_qmethod(self):
-        frame_1 = np.array([[2/3, 2/3, 1/3], [ 2/3, -1/3, -2/3]])
-        frame_2 = np.array([[0.8, 0.6,   0], [-0.6,  0.8,    0]])
+        frame_1 = np.array([[2 / 3, 2 / 3, 1 / 3], [2 / 3, -1 / 3, -2 / 3]])
+        frame_2 = np.array([[0.8, 0.6, 0], [-0.6, 0.8, 0]])
         q = quaternions.Quaternion.from_qmethod(frame_1.T, frame_2.T, np.ones(2))
 
         for a1 in np.arange(0, 1, .1):
@@ -51,10 +55,10 @@ class QuaternionTest(unittest.TestCase):
                     c3, c2, c1 = np.cos(xyz)
                     s3, s2, s1 = np.sin(xyz)
                     expected = np.array([
-                        [c2*c3,             -c2*s3,         s2],
-                        [c1*s3+c3*s1*s2,    c1*c3-s1*s2*s3, -c2*s1],
-                        [s1*s3-c1*c3*s2,    c3*s1+c1*s2*s3, c1*c2]
-                        ])
+                        [c2 * c3,               -c2 * s3,                 s2],       # noqa
+                        [c1 * s3 + c3 * s1 * s2, c1 * c3 - s1 * s2 * s3, -c2 * s1],  # noqa
+                        [s1 * s3 - c1 * c3 * s2, c3 * s1 + c1 * s2 * s3,  c1 * c2]   # noqa
+                    ])
 
                     obtained = quaternions.Quaternion.from_ra_dec_roll(ra, dec, roll)
 
@@ -96,4 +100,4 @@ class QuaternionTest(unittest.TestCase):
         v2 = np.array([-.01, .02, .99])
         oaf = quaternions.Quaternion.OpticalAxisFirst()
         np.testing.assert_allclose([.99, -.02, -.01], oaf.matrix.dot(v1))
-        np.testing.assert_allclose([.99,  .01, -.02], oaf.matrix.dot(v2))
+        np.testing.assert_allclose([.99, .01, -.02], oaf.matrix.dot(v2))

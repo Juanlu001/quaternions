@@ -1,0 +1,26 @@
+stages:
+ - quality
+ - build
+ - test
+
+syntax:
+  stage: quality
+  image: 'registry.gitlab.satellogic.com/joac/docker-fades-make-builder:latest'
+  script:
+    - fades -p python3 -d flake8 -x flake8 
+  tags:
+    - docker-with-docker
+
+no_pyc:
+  stage: quality
+  image: 'registry.gitlab.satellogic.com/joac/docker-fades-make-builder:latest'
+  script:
+    - exit $(find * -name *.pyc -o -name *.pycache | wc -l)
+
+test:
+  stage: test
+  image: 'registry.gitlab.satellogic.com/joac/docker-fades-make-builder:latest'
+  script:
+    - "python3 -m unittest -v"
+  tags:
+    - docker-with-docker 

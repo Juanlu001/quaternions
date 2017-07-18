@@ -1,1 +1,1 @@
-from quaternions.quaternions import Quaternion
+from quaternions.quaternions import Quaternion  # NOQA

@@ -25,11 +25,11 @@ class Quaternion(object):
     def __mul__(self, p):
         if isinstance(p, Quaternion):
             mat = np.array([
-                [self.qr, -self.qi, -self.qj, -self.qk],
-                [self.qi,  self.qr,  self.qk, -self.qj],
-                [self.qj, -self.qk,  self.qr,  self.qi],
-                [self.qk,  self.qj, -self.qi,  self.qr]
-                ])
+                [self.qr, -self.qi, -self.qj, -self.qk],  # noqa
+                [self.qi,  self.qr,  self.qk, -self.qj],  # noqa
+                [self.qj, -self.qk,  self.qr,  self.qi],  # noqa
+                [self.qk,  self.qj, -self.qi,  self.qr]   # noqa
+            ])
             result = mat.dot(np.array(p.coordinates))
             return Quaternion(*result)
         else:
@@ -101,27 +101,33 @@ class Quaternion(object):
             qr ** 2 + qi ** 2 - qj ** 2 - qk ** 2,
             2 * qr * qk + 2 * qi * qj,
             -2 * qr * qj + 2 * qi * qk
-            ])
+        ])
         b1 = np.array([
             -2 * qr * qk + 2 * qi * qj,
             qr ** 2 - qi ** 2 + qj ** 2 - qk ** 2,
             2 * qr * qi + 2 * qj * qk
-            ])
+        ])
         b2 = np.array([
             2 * qr * qj + 2 * qi * qk,
             -2 * qr * qi + 2 * qj * qk,
             qr ** 2 - qi ** 2 - qj ** 2 + qk ** 2
-            ])
+        ])
         return b0, b1, b2
 
     @property
     def matrix(self):
         qr, qi, qj, qk = self.coordinates
         return np.array([
-            [qr*qr + qi*qi - qj*qj - qk*qk,  2 * (qi*qj + qr*qk),            2 * (qi*qk - qr*qj)],
-            [2 * (qi*qj - qr*qk),            qr*qr - qi*qi + qj*qj - qk*qk,  2 * (qj*qk + qr*qi)],
-            [2 * (qi*qk + qr*qj),            2 * (qj*qk - qr*qi),            qr*qr - qi*qi - qj*qj + qk*qk]
-            ])
+            [qr * qr + qi * qi - qj * qj - qk * qk,
+                2 * (qi * qj + qr * qk),
+                2 * (qi * qk - qr * qj)],
+            [2 * (qi * qj - qr * qk),
+                qr * qr - qi * qi + qj * qj - qk * qk,
+                2 * (qj * qk + qr * qi)],
+            [2 * (qi * qk + qr * qj),
+                2 * (qj * qk - qr * qi),
+                qr * qr - qi * qi - qj * qj + qk * qk]
+        ])
 
     @property
     def rotation_vector(self):
@@ -157,7 +163,7 @@ class Quaternion(object):
         mat = np.array(mat)
         tr = np.trace(mat)
         d = 1 + 2 * mat.diagonal() - tr
-        qsquare = 1/4 * np.array([1 + tr, d[0], d[1], d[2]])
+        qsquare = 1 / 4 * np.array([1 + tr, d[0], d[1], d[2]])
         # compute signs matrix
         signs = np.sign([mat[1, 2] - mat[2, 1], mat[2, 0] - mat[0, 2], mat[0, 1] - mat[1, 0],
                          mat[0, 1] + mat[1, 0], mat[2, 0] + mat[0, 2], mat[1, 2] + mat[2, 1]])

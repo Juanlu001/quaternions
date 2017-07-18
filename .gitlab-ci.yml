@@ -16,6 +16,8 @@ no_pyc:
   image: 'registry.gitlab.satellogic.com/joac/docker-fades-make-builder:latest'
   script:
     - exit $(find * -name *.pyc -o -name *.pycache | wc -l)
+  tags:
+    - docker-with-docker
 
 test:
   stage: test

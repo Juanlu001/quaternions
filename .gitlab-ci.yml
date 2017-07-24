@@ -9,7 +9,7 @@ syntax:
   script:
     - fades -p python3 -d flake8 -x flake8 
   tags:
-    - docker-with-docker
+    - docker-amd64-v2
 
 no_pyc:
   stage: quality
@@ -17,7 +17,7 @@ no_pyc:
   script:
     - exit $(find * -name *.pyc -o -name *.pycache | wc -l)
   tags:
-    - docker-with-docker
+    - docker-amd64-v2
 
 test:
   stage: test
@@ -25,4 +25,4 @@ test:
   script:
     - "fades -d numpy -x python3 -m unittest -v"
   tags:
-    - docker-with-docker 
+    - docker-amd64-v2

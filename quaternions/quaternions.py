@@ -87,12 +87,38 @@ class Quaternion(object):
         imag = imag / imag_norm * np.arctan2(imag_norm, self.qr / norm)
         return Quaternion(np.log(norm), *imag)
 
+    def distance(self, other):
+        '''Returns the distance in radians between two unitary quaternions'''
+        quot = (self * other.conjugate()).positive_representant
+        return 2 * quot.log().norm()
+
     def is_unitary(self):
         return abs(self._squarenorm() - 1) < self.tolerance
 
     @property
     def coordinates(self):
         return self.qr, self.qi, self.qj, self.qk
+
+    @property
+    def positive_representant(self):
+        '''Unitary quaternions q and -q correspond to the same element in SO(3).
+        In order to perform some computations (v.g., distance), it is important
+        to fix one of them.
+
+        Though the following computations can be done for any quaternion, we allow them
+        only for unitary ones.
+        '''
+
+        assert self.is_unitary(), 'This method makes sense for unitary quaternions'
+
+        for coord in self.coordinates:
+            if coord > 0:
+                return self
+            if coord < 0:
+                return -self
+        # add a return here if you remove the assert
+
+
 
     @property
     def basis(self):

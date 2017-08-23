@@ -101,3 +101,20 @@ class QuaternionTest(unittest.TestCase):
         oaf = quaternions.Quaternion.OpticalAxisFirst()
         np.testing.assert_allclose([.99, -.02, -.01], oaf.matrix.dot(v1))
         np.testing.assert_allclose([.99, .01, -.02], oaf.matrix.dot(v2))
+
+    def test_distance(self):
+        q = quaternions.Quaternion.from_rotation_vector([.1, .2, .3])
+
+        for rot_x in np.linspace(-np.pi, np.pi, 7):
+            for rot_y in np.linspace(-np.pi / 2, np.pi / 2, 3):
+                for rot_z in np.linspace(-np.pi / 2, np.pi / 2, 2):
+
+                    rotation = [rot_x, rot_y, rot_z]
+                    rot_quat = quaternions.Quaternion.from_rotation_vector(rotation)
+                    q_rot = q * rot_quat
+
+                    expected = np.linalg.norm(rotation) % (2 * np.pi)
+                    if expected > np.pi:
+                        expected = 2 * np.pi - expected
+
+                    self.assertAlmostEqual(expected, q.distance(q_rot))

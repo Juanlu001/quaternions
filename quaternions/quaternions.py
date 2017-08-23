@@ -118,8 +118,6 @@ class Quaternion(object):
                 return -self
         # add a return here if you remove the assert
 
-
-
     @property
     def basis(self):
         qr, qi, qj, qk = self.coordinates

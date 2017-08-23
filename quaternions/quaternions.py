@@ -22,6 +22,9 @@ class Quaternion(object):
         assert isinstance(p, Quaternion)
         return Quaternion(self.qr - p.qr, self.qi - p.qi, self.qj - p.qj, self.qk - p.qk)
 
+    def __neg__(self):
+        return Quaternion(-self.qr, -self.qi, -self.qj, -self.qk)
+
     def __mul__(self, p):
         if isinstance(p, Quaternion):
             mat = np.array([

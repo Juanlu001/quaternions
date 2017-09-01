@@ -243,12 +243,13 @@ class Quaternion(object):
         '''
         if weights:
             if len(quaternions) != len(weights):
-                raise AssertionError("received {} quaternions and {} weights.".format(len(quaternions), len(weights)))
+                raise AssertionError("received {} quaternions and {} weights.".format(
+                    len(quaternions), len(weights)))
             M = np.zeros((4, 4))
             for w, q in zip(weights, quaternions):
                 quat = np.array(q.coordinates).reshape((-1, 1))
                 M = M + w * (quat.dot(quat.reshape((1, -1))))
-            M = (1/np.sum(weights))*M
+            M = (1 / np.sum(weights)) * M
         else:
             B = np.array([q.coordinates for q in quaternions])
             M = B.T.dot(B)

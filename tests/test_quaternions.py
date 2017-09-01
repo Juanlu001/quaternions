@@ -95,6 +95,38 @@ class QuaternionTest(unittest.TestCase):
         np.testing.assert_allclose(q1.coordinates, avg_l.coordinates)
         np.testing.assert_allclose(q1.coordinates, avg_r.coordinates)
 
+    def test_average_weights_easy(self):
+        q1 = quaternions.Quaternion(1, 0, 0, 0)
+        q2 = quaternions.Quaternion(-1, 0, 0, 0)
+        weights = [1, 1]
+        avg = quaternions.Quaternion.average(q1, q2, weights=weights)
+        np.testing.assert_allclose(q1.coordinates, avg.coordinates)
+
+    def test_average_weights_easy_2(self):
+        q1 = quaternions.Quaternion(1, 0, 0, 0)
+        q2 = quaternions.Quaternion(0.707, 0, 0.707, 0)
+        weights = [1, 0]
+        avg = quaternions.Quaternion.average(q1, q2, weights=weights)
+        np.testing.assert_allclose(q1.coordinates, avg.coordinates)
+
+    def test_average_weights_mild(self):
+        q1 = quaternions.Quaternion.exp(quaternions.Quaternion(0, .1, .3, .7))
+        quats_l = []
+        quats_r = []
+        weights = []
+        for i in np.arange(-.1, .11, .05):
+            for j in np.arange(-.1, .11, .05):
+                for k in np.arange(-.1, .11, .05):
+                    q = quaternions.Quaternion.exp(quaternions.Quaternion(0, i, j, k))
+                    quats_l.append(q1 * q)
+                    quats_r.append(q * q1)
+                    weights.append(1)
+
+        avg_l = quaternions.Quaternion.average(*quats_l, weights=weights)
+        avg_r = quaternions.Quaternion.average(*quats_r, weights=weights)
+        np.testing.assert_allclose(q1.coordinates, avg_l.coordinates)
+        np.testing.assert_allclose(q1.coordinates, avg_r.coordinates)
+
     def test_optical_axis_first(self):
         v1 = np.array([.02, .01, .99])
         v2 = np.array([-.01, .02, .99])

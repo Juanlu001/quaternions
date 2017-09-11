@@ -227,7 +227,7 @@ class Quaternion(object):
         return Quaternion(*q)
 
     @staticmethod
-    def from_qmethod(source, target, probabilities):
+    def from_qmethod(source, target, probabilities=None):
         '''
         Returns the quaternion corresponding to solving with qmethod.
 
@@ -236,7 +236,7 @@ class Quaternion(object):
         J. Opt. Soc. Am. A, Vol. 4, No. 4, April 1987
 
         It "sends" the (3xn) matrix source to the (3xn) matrix target.
-        Vectors are multiplied by probabilities too.
+        Vectors are multiplied by probabilities too, if available.
 
         "sends" means that if q = Quaternion.from_qmethod(s, t)
         then q.matrix will be a rotation matrix (not a coordinate changing matrix).
@@ -249,7 +249,10 @@ class Quaternion(object):
         Quaternion.from_qmethod(s, t) is the quaternion corresponding to the change of basis
         from F1 to F2.
         '''
-        B = source.dot(np.diag(probabilities)).dot(target.T)
+        if probabilities is not None:
+            B = source.dot(np.diag(probabilities)).dot(target.T)
+        else:
+            B = source.dot(target.T)
         sigma = np.trace(B)
         S = B + B.T
         Z = B - B.T

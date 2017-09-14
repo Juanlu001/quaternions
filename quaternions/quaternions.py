@@ -35,6 +35,9 @@ class Quaternion(object):
             ])
             result = mat.dot(np.array(p.coordinates))
             return Quaternion(*result)
+        elif hasattr(p, '__iter__'):
+            assert len(p) == 3
+            return self.matrix.dot(p)
         else:
             return Quaternion(self.qr * p, self.qi * p, self.qj * p, self.qk * p)
 

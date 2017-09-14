@@ -86,7 +86,8 @@ class Quaternion(object):
         imag = np.array((self.qi, self.qj, self.qk)) / norm
         imag_norm = np.linalg.norm(imag)
         if imag_norm == 0:
-            return Quaternion(np.log(norm), np.pi / 2, 0, 0)
+            i_part = 0 if self.qr > 0 else np.pi
+            return Quaternion(np.log(norm), i_part, 0, 0)
         imag = imag / imag_norm * np.arctan2(imag_norm, self.qr / norm)
         return Quaternion(np.log(norm), *imag)
 

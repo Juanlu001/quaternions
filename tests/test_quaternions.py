@@ -143,4 +143,4 @@ class ParameterizedTests(unittest.TestCase):
         q = Quaternion.from_rotation_vector(rot)
         distance = np.linalg.norm(rot - q.rotation_vector)
 
-        assert (distance % τ) < 1e-8
+        assert (distance % 2 * np.pi) < 1e-8

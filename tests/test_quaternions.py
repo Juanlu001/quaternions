@@ -4,7 +4,7 @@ from hypothesis.strategies import floats
 
 import numpy as np
 
-import quaternions
+from quaternions import Quaternion
 
 
 class QuaternionTest(unittest.TestCase):
@@ -15,18 +15,18 @@ class QuaternionTest(unittest.TestCase):
     schaub_result = np.array([.961798, -.14565, .202665, .112505])
 
     def test_matrix_respects_product(self):
-        q1 = quaternions.Quaternion.exp(quaternions.Quaternion(0, .1, .02, -.3))
-        q2 = quaternions.Quaternion.exp(quaternions.Quaternion(0, -.2, .21, .083))
+        q1 = Quaternion.exp(Quaternion(0, .1, .02, -.3))
+        q2 = Quaternion.exp(Quaternion(0, -.2, .21, .083))
         np.testing.assert_allclose((q1 * q2).matrix, q1.matrix.dot(q2.matrix))
 
     def test_from_matrix(self):
-        q = quaternions.Quaternion.from_matrix(QuaternionTest.schaub_example_dcm)
+        q = Quaternion.from_matrix(QuaternionTest.schaub_example_dcm)
         np.testing.assert_allclose(QuaternionTest.schaub_result, q.coordinates, atol=1e-5, rtol=0)
 
     def test_from_matrix_twisted(self):
-        q = quaternions.Quaternion.from_matrix(QuaternionTest.schaub_example_dcm * [-1, -1, 1])
-        e1 = quaternions.Quaternion(*QuaternionTest.schaub_result)
-        expected = e1 * quaternions.Quaternion(0, 0, 0, 1)
+        q = Quaternion.from_matrix(QuaternionTest.schaub_example_dcm * [-1, -1, 1])
+        e1 = Quaternion(*QuaternionTest.schaub_result)
+        expected = e1 * Quaternion(0, 0, 0, 1)
         np.testing.assert_allclose(expected.coordinates, q.coordinates, atol=1e-5, rtol=0)
 
     def test_from_rotation_vector_to_matrix(self):
@@ -35,13 +35,13 @@ class QuaternionTest(unittest.TestCase):
             [.892539, .157379, -.422618],
             [-.275451, .932257, -.23457],
             [.357073, .325773, .875426]])
-        q = quaternions.Quaternion.from_rotation_vector(phi)
+        q = Quaternion.from_rotation_vector(phi)
         np.testing.assert_allclose(expected, q.matrix, atol=1e-5, rtol=0)
 
     def test_qmethod(self):
         frame_1 = np.array([[2 / 3, 2 / 3, 1 / 3], [2 / 3, -1 / 3, -2 / 3]])
         frame_2 = np.array([[0.8, 0.6, 0], [-0.6, 0.8, 0]])
-        q = quaternions.Quaternion.from_qmethod(frame_1.T, frame_2.T, np.ones(2))
+        q = Quaternion.from_qmethod(frame_1.T, frame_2.T, np.ones(2))
 
         for a1 in np.arange(0, 1, .1):
             for a2 in np.arange(0, 1, .1):
@@ -63,7 +63,7 @@ class QuaternionTest(unittest.TestCase):
                         [s1 * s3 - c1 * c3 * s2, c3 * s1 + c1 * s2 * s3,  c1 * c2]   # noqa
                     ])
 
-                    obtained = quaternions.Quaternion.from_ra_dec_roll(ra, dec, roll)
+                    obtained = Quaternion.from_ra_dec_roll(ra, dec, roll)
 
                     np.testing.assert_allclose(expected, obtained.matrix, atol=1e-15)
 
@@ -71,49 +71,49 @@ class QuaternionTest(unittest.TestCase):
         for ra in np.linspace(-170, 170, 8):
             for dec in np.linspace(-88, 88, 8):
                 for roll in np.linspace(-170, 170, 8):
-                    q = quaternions.Quaternion.from_ra_dec_roll(ra, dec, roll)
+                    q = Quaternion.from_ra_dec_roll(ra, dec, roll)
 
                     np.testing.assert_allclose([ra, dec, roll], q.ra_dec_roll)
 
     def test_average_easy(self):
-        q1 = quaternions.Quaternion(1, 0, 0, 0)
-        q2 = quaternions.Quaternion(-1, 0, 0, 0)
-        avg = quaternions.Quaternion.average(q1, q2)
+        q1 = Quaternion(1, 0, 0, 0)
+        q2 = Quaternion(-1, 0, 0, 0)
+        avg = Quaternion.average(q1, q2)
 
         np.testing.assert_allclose(q1.coordinates, avg.coordinates)
 
     def test_average_mild(self):
-        q1 = quaternions.Quaternion.exp(quaternions.Quaternion(0, .1, .3, .7))
+        q1 = Quaternion.exp(Quaternion(0, .1, .3, .7))
         quats_l = []
         quats_r = []
         for i in np.arange(-.1, .11, .05):
             for j in np.arange(-.1, .11, .05):
                 for k in np.arange(-.1, .11, .05):
-                    q = quaternions.Quaternion.exp(quaternions.Quaternion(0, i, j, k))
+                    q = Quaternion.exp(Quaternion(0, i, j, k))
                     quats_l.append(q1 * q)
                     quats_r.append(q * q1)
 
-        avg_l = quaternions.Quaternion.average(*quats_l)
-        avg_r = quaternions.Quaternion.average(*quats_r)
+        avg_l = Quaternion.average(*quats_l)
+        avg_r = Quaternion.average(*quats_r)
         np.testing.assert_allclose(q1.coordinates, avg_l.coordinates)
         np.testing.assert_allclose(q1.coordinates, avg_r.coordinates)
 
     def test_optical_axis_first(self):
         v1 = np.array([.02, .01, .99])
         v2 = np.array([-.01, .02, .99])
-        oaf = quaternions.Quaternion.OpticalAxisFirst()
+        oaf = Quaternion.OpticalAxisFirst()
         np.testing.assert_allclose([.99, -.02, -.01], oaf.matrix.dot(v1))
         np.testing.assert_allclose([.99, .01, -.02], oaf.matrix.dot(v2))
 
     def test_distance(self):
-        q = quaternions.Quaternion.from_rotation_vector([.1, .2, .3])
+        q = Quaternion.from_rotation_vector([.1, .2, .3])
 
         for rot_x in np.linspace(-np.pi, np.pi, 7):
             for rot_y in np.linspace(-np.pi / 2, np.pi / 2, 3):
                 for rot_z in np.linspace(-np.pi / 2, np.pi / 2, 2):
 
                     rotation = [rot_x, rot_y, rot_z]
-                    rot_quat = quaternions.Quaternion.from_rotation_vector(rotation)
+                    rot_quat = Quaternion.from_rotation_vector(rotation)
                     q_rot = q * rot_quat
 
                     expected = np.linalg.norm(rotation) % (2 * np.pi)

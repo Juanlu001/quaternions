@@ -23,6 +23,6 @@ test:
   stage: test
   image: 'registry.gitlab.satellogic.com/joac/docker-fades-make-builder:latest'
   script:
-    - "fades -d numpy -x python3 -m unittest -v"
+    - fades -d numpy -d hypothesis -x python3 -m unittest -v
   tags:
     - docker-amd64-v2

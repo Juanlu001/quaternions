@@ -134,6 +134,14 @@ class ParameterizedTests(unittest.TestCase):
     def angle_to_xy(angle):
         return np.cos(np.radians(angle)), np.sin(np.radians(angle))
 
+    @staticmethod
+    def from_mrp(xyz):
+        N = xyz.dot(xyz)
+        inv_proj = lambda x: 4 * x / (4 + N)
+        qi, qj, qk = map(inv_proj, xyz)
+        qr = (4 - N) / (4 + N)
+        return Quaternion(qr, qi, qj, qk)
+
     @given(floats(min_value=-180, max_value=180),
            floats(min_value=-89, max_value=89),  # avoid singularities in -90 & 90 degs
            floats(min_value=0, max_value=360))
@@ -154,3 +162,21 @@ class ParameterizedTests(unittest.TestCase):
         distance = np.linalg.norm(rot - q.rotation_vector)
 
         assert (distance % 2 * np.pi) < 1e-8
+
+    @given(floats(min_value=-1, max_value=1),
+           floats(min_value=-1, max_value=1),
+           floats(min_value=-1, max_value=1))
+    def test_matrix(self, ma, mb, mc):
+        q = self.from_mrp(np.array([ma, mb, mc]))
+        self.assertTrue(q.is_unitary())
+
+        m = q.matrix
+        np.testing.assert_almost_equal(np.identity(3), m.dot(m.T))
+
+        obtained = Quaternion.from_matrix(m)
+        self.assertTrue(obtained.is_unitary())
+
+        np.testing.assert_almost_equal(
+                q.positive_representant.coordinates,
+                obtained.positive_representant.coordinates,
+                decimal=8)

@@ -1,6 +1,7 @@
 import unittest
 from hypothesis import given
 from hypothesis.strategies import floats
+import logging
 
 import numpy as np
 
@@ -125,15 +126,29 @@ class QuaternionTest(unittest.TestCase):
 
 class ParameterizedTests(unittest.TestCase):
 
+    @staticmethod
+    def ra_dec_to_xyz(ra, dec):
+        cr, sr = np.cos(np.radians(ra)), np.sin(np.radians(ra))
+        cd, sd = np.cos(np.radians(dec)), np.sin(np.radians(dec))
+        return np.array([cr * cd, sr * cd, sd])
+
+    @staticmethod
+    def angle_to_xy(angle):
+        return np.cos(np.radians(angle)), np.sin(np.radians(angle))
+
+
     @given(floats(min_value=-180, max_value=180),
-           floats(min_value=-90, max_value=90),
+           floats(min_value=-89, max_value=89),  # avoid singularities in -90 & 90 degs
            floats(min_value=0, max_value=360))
     def test_quat_ra_dec_roll(self, ra, dec, roll):
-        q = Quaternion.from_ra_dec_roll(ra, dec, 2.)
+        q = Quaternion.from_ra_dec_roll(ra, dec, roll)
         ob_ra, ob_dec, ob_roll = q.ra_dec_roll
-        assert abs(ob_dec - dec) < 1e-8
-        assert abs(ob_ra - ra) < 1e-8
-        
+        np.testing.assert_almost_equal(
+                self.ra_dec_to_xyz(ob_ra, ob_dec),
+                self.ra_dec_to_xyz(ra, dec))
+        np.testing.assert_almost_equal(
+                self.angle_to_xy(ob_roll), self.angle_to_xy(roll), decimal=2)
+
 
     @given(floats(min_value=-2, max_value=2),
            floats(min_value=-2, max_value=2),

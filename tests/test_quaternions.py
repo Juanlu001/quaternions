@@ -137,7 +137,9 @@ class ParameterizedTests(unittest.TestCase):
     @staticmethod
     def from_mrp(xyz):
         N = xyz.dot(xyz)
-        inv_proj = lambda x: 4 * x / (4 + N)
+        def inv_proj(x):
+            return 4 * x / (4 + N)
+
         qi, qj, qk = map(inv_proj, xyz)
         qr = (4 - N) / (4 + N)
         return Quaternion(qr, qi, qj, qk)
@@ -176,10 +178,9 @@ class ParameterizedTests(unittest.TestCase):
         obtained = Quaternion.from_matrix(m)
         self.assertTrue(obtained.is_unitary())
 
-        np.testing.assert_almost_equal(
-                q.positive_representant.coordinates,
-                obtained.positive_representant.coordinates,
-                decimal=8)
+        np.testing.assert_almost_equal(q.positive_representant.coordinates,
+                                       obtained.positive_representant.coordinates,
+                                       decimal=8)
 
     @given(floats(min_value=-1, max_value=1),
            floats(min_value=-1, max_value=1),
@@ -189,10 +190,9 @@ class ParameterizedTests(unittest.TestCase):
         expq = q.exp()
         qback = expq.log()
 
-        np.testing.assert_almost_equal(
-                q.coordinates,
-                qback.coordinates,
-                decimal=8)
+        np.testing.assert_almost_equal(q.coordinates,
+                                       qback.coordinates,
+                                       decimal=8)
 
     @given(floats(min_value=-5, max_value=5),
            floats(min_value=-5, max_value=5),
@@ -206,11 +206,10 @@ class ParameterizedTests(unittest.TestCase):
         logq = q.log()
         qback = logq.exp()
 
-        np.testing.assert_almost_equal(
-                q.coordinates,
-                qback.coordinates,
-                decimal=8)
-        
+        np.testing.assert_almost_equal(q.coordinates,
+                                       qback.coordinates,
+                                       decimal=8)
+
     @given(floats(min_value=-2, max_value=2),
            floats(min_value=-2, max_value=2),
            floats(min_value=-2, max_value=2))
@@ -227,4 +226,6 @@ class ParameterizedTests(unittest.TestCase):
         qback = Quaternion.from_qmethod(vectors, rotated_vectors, np.ones(6))
         q_diff = (q / qback).positive_representant
 
-        np.testing.assert_almost_equal(q_diff.coordinates, Quaternion.Unit().coordinates, decimal=4)
+        np.testing.assert_almost_equal(q_diff.coordinates,
+                                       Quaternion.Unit().coordinates,
+                                       decimal=4)

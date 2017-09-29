@@ -192,6 +192,7 @@ class Quaternion(object):
         tr = np.trace(mat)
         d = 1 + 2 * mat.diagonal() - tr
         qsquare = 1 / 4 * np.array([1 + tr, d[0], d[1], d[2]])
+        qsquare = qsquare.clip(0, None)  # avoid numerical errors
         # compute signs matrix
         signs = np.sign([mat[1, 2] - mat[2, 1], mat[2, 0] - mat[0, 2], mat[0, 1] - mat[1, 0],
                          mat[0, 1] + mat[1, 0], mat[2, 0] + mat[0, 2], mat[1, 2] + mat[2, 1]])

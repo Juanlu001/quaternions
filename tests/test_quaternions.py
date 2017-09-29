@@ -180,3 +180,33 @@ class ParameterizedTests(unittest.TestCase):
                 q.positive_representant.coordinates,
                 obtained.positive_representant.coordinates,
                 decimal=8)
+
+    @given(floats(min_value=-1, max_value=1),
+           floats(min_value=-1, max_value=1),
+           floats(min_value=-1, max_value=1))
+    def test_log_exp(self, qi, qj, qk):
+        q = Quaternion(0, qi, qj, qk)
+        expq = q.exp()
+        qback = expq.log()
+
+        np.testing.assert_almost_equal(
+                q.coordinates,
+                qback.coordinates,
+                decimal=8)
+
+    @given(floats(min_value=-5, max_value=5),
+           floats(min_value=-5, max_value=5),
+           floats(min_value=-5, max_value=5),
+           floats(min_value=-5, max_value=5))
+    def test_exp_log(self, qr, qi, qj, qk):
+        q = Quaternion(qr, qi, qj, qk)
+        if q.norm() == 0:
+            return
+
+        logq = q.log()
+        qback = logq.exp()
+
+        np.testing.assert_almost_equal(
+                q.coordinates,
+                qback.coordinates,
+                decimal=8)

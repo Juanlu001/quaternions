@@ -137,6 +137,7 @@ class ParameterizedTests(unittest.TestCase):
     @staticmethod
     def from_mrp(xyz):
         N = xyz.dot(xyz)
+
         def inv_proj(x):
             return 4 * x / (4 + N)
 

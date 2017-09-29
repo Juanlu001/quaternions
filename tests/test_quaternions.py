@@ -210,3 +210,21 @@ class ParameterizedTests(unittest.TestCase):
                 q.coordinates,
                 qback.coordinates,
                 decimal=8)
+        
+    @given(floats(min_value=-2, max_value=2),
+           floats(min_value=-2, max_value=2),
+           floats(min_value=-2, max_value=2))
+    def test_from_qmethod(self, rx, ry, rz):
+        q = Quaternion.from_rotation_vector(np.array([rx, ry, rz]))
+
+        vectors = np.random.normal(scale=1.0, size=(3, 6))
+        norms = np.linalg.norm(vectors, axis=0)
+        vectors /= norms
+
+        errors = np.random.normal(scale=1e-6, size=(3, 6))
+        rotated_vectors = q.matrix.dot(vectors) + errors
+
+        qback = Quaternion.from_qmethod(vectors, rotated_vectors, np.ones(6))
+        q_diff = (q / qback).positive_representant
+
+        np.testing.assert_almost_equal(q_diff.coordinates, Quaternion.Unit().coordinates, decimal=4)

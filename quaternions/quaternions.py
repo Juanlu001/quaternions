@@ -242,13 +242,10 @@ class Quaternion(object):
         See Averaging Quaternions, by Markley, Cheng, Crassidis, Oschman.
         '''
         B = np.array([q.coordinates for q in quaternions])
-        if weights:
-            if len(quaternions) != len(weights):
-                raise AssertionError("received {} quaternions and {} weights.".format(
-                    len(quaternions), len(weights)))
-            M = B.T.dot(np.diag(weights)).dot(B)
-        else:
-            M = B.T.dot(B)
+        if not weights:
+            weights = np.ones(len(quaternions))
+        M = B.T.dot(np.diag(weights)).dot(B)
+
         return Quaternion._first_eigenvector(M)
 
     @staticmethod

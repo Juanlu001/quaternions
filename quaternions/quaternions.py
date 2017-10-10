@@ -2,6 +2,7 @@ import functools
 import numpy as np
 from collections import Iterable
 
+
 class Quaternion(object):
     ''' A class that holds quaternions. It actually holds Q^op, as
     this is the way Schaub-Jenkins work with them.

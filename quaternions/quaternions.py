@@ -264,7 +264,7 @@ class Quaternion(object):
         return Quaternion._first_eigenvector(K)
 
     @staticmethod
-    def average(*quaternions):
+    def average(*quaternions, weights=None):
         '''
         Return the quaternion such that its matrix minimizes the square distance
         to the matrices of the quaternions in the argument list.
@@ -272,7 +272,10 @@ class Quaternion(object):
         See Averaging Quaternions, by Markley, Cheng, Crassidis, Oschman.
         '''
         B = np.array([q.coordinates for q in quaternions])
-        M = B.T.dot(B)
+        if not weights:
+            weights = np.ones(len(quaternions))
+        M = B.T.dot(np.diag(weights)).dot(B)
+
         return Quaternion._first_eigenvector(M)
 
     @staticmethod

@@ -1,6 +1,6 @@
 import functools
 import numpy as np
-
+from collections import Iterable
 
 class Quaternion(object):
     ''' A class that holds quaternions. It actually holds Q^op, as
@@ -35,8 +35,7 @@ class Quaternion(object):
             ])
             result = mat.dot(np.array(p.coordinates))
             return Quaternion(*result)
-        elif hasattr(p, '__iter__'):
-            assert len(p) == 3
+        elif isinstance(p, Iterable):
             return self.matrix.dot(p)
         else:
             return Quaternion(self.qr * p, self.qi * p, self.qj * p, self.qk * p)

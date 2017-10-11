@@ -1,5 +1,6 @@
 import functools
 import numpy as np
+from collections import Iterable
 
 
 class Quaternion(object):
@@ -35,6 +36,8 @@ class Quaternion(object):
             ])
             result = mat.dot(np.array(p.coordinates))
             return Quaternion(*result)
+        elif isinstance(p, Iterable):
+            return self.matrix.dot(p)
         else:
             return Quaternion(self.qr * p, self.qi * p, self.qj * p, self.qk * p)
 

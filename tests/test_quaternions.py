@@ -16,6 +16,12 @@ class QuaternionTest(unittest.TestCase):
         q2 = quaternions.Quaternion.exp(quaternions.Quaternion(0, -.2, .21, .083))
         np.testing.assert_allclose((q1 * q2).matrix, q1.matrix.dot(q2.matrix))
 
+    def test_quaternion_rotates_vector(self):
+        q1 = quaternions.Quaternion.exp(quaternions.Quaternion(0, .1, .02, -.3))
+        vector = QuaternionTest.schaub_example_dcm[:, 1]
+        rotated_vector = q1 * vector
+        np.testing.assert_allclose(rotated_vector, q1.matrix.dot(vector), atol=1e-5, rtol=0)
+
     def test_from_matrix(self):
         q = quaternions.Quaternion.from_matrix(QuaternionTest.schaub_example_dcm)
         np.testing.assert_allclose(QuaternionTest.schaub_result, q.coordinates, atol=1e-5, rtol=0)

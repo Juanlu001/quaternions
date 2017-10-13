@@ -89,7 +89,8 @@ class Quaternion(object):
         imag = np.array((self.qi, self.qj, self.qk)) / norm
         imag_norm = np.linalg.norm(imag)
         if imag_norm == 0:
-            return Quaternion(np.log(norm), np.pi / 2, 0, 0)
+            i_part = 0 if self.qr > 0 else np.pi
+            return Quaternion(np.log(norm), i_part, 0, 0)
         imag = imag / imag_norm * np.arctan2(imag_norm, self.qr / norm)
         return Quaternion(np.log(norm), *imag)
 
@@ -194,6 +195,7 @@ class Quaternion(object):
         tr = np.trace(mat)
         d = 1 + 2 * mat.diagonal() - tr
         qsquare = 1 / 4 * np.array([1 + tr, d[0], d[1], d[2]])
+        qsquare = qsquare.clip(0, None)  # avoid numerical errors
         # compute signs matrix
         signs = np.sign([mat[1, 2] - mat[2, 1], mat[2, 0] - mat[0, 2], mat[0, 1] - mat[1, 0],
                          mat[0, 1] + mat[1, 0], mat[2, 0] + mat[0, 2], mat[1, 2] + mat[2, 1]])

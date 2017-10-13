@@ -19,7 +19,7 @@ class QuaternionTest(unittest.TestCase):
         np.testing.assert_allclose((q1 * q2).matrix, q1.matrix.dot(q2.matrix))
 
     def test_quaternion_rotates_vector(self):
-        q1 = quaternions.Quaternion.exp(quaternions.Quaternion(0, .1, .02, -.3))
+        q1 = Quaternion.exp(Quaternion(0, .1, .02, -.3))
         vector = QuaternionTest.schaub_example_dcm[:, 1]
         rotated_vector = q1 * vector
         np.testing.assert_allclose(rotated_vector, q1.matrix.dot(vector), atol=1e-5, rtol=0)
@@ -115,34 +115,34 @@ class QuaternionTest(unittest.TestCase):
         np.testing.assert_allclose(q1.coordinates, avg_r.coordinates)
 
     def test_average_weights_easy(self):
-        q1 = quaternions.Quaternion(1, 0, 0, 0)
-        q2 = quaternions.Quaternion(-1, 0, 0, 0)
+        q1 = Quaternion(1, 0, 0, 0)
+        q2 = Quaternion(-1, 0, 0, 0)
         weights = [1, 1]
-        avg = quaternions.Quaternion.average(q1, q2, weights=weights)
+        avg = Quaternion.average(q1, q2, weights=weights)
         np.testing.assert_allclose(q1.coordinates, avg.coordinates)
 
     def test_average_weights_easy_2(self):
-        q1 = quaternions.Quaternion(1, 0, 0, 0)
-        q2 = quaternions.Quaternion(0.707, 0, 0.707, 0)
+        q1 = Quaternion(1, 0, 0, 0)
+        q2 = Quaternion(0.707, 0, 0.707, 0)
         weights = [1, 0]
-        avg = quaternions.Quaternion.average(q1, q2, weights=weights)
+        avg = Quaternion.average(q1, q2, weights=weights)
         np.testing.assert_allclose(q1.coordinates, avg.coordinates)
 
     def test_average_weights_mild(self):
-        q1 = quaternions.Quaternion.exp(quaternions.Quaternion(0, .1, .3, .7))
+        q1 = Quaternion.exp(Quaternion(0, .1, .3, .7))
         quats_l = []
         quats_r = []
         weights = []
         for i in np.arange(-.1, .11, .05):
             for j in np.arange(-.1, .11, .05):
                 for k in np.arange(-.1, .11, .05):
-                    q = quaternions.Quaternion.exp(quaternions.Quaternion(0, i, j, k))
+                    q = Quaternion.exp(Quaternion(0, i, j, k))
                     quats_l.append(q1 * q)
                     quats_r.append(q * q1)
                     weights.append(1)
 
-        avg_l = quaternions.Quaternion.average(*quats_l, weights=weights)
-        avg_r = quaternions.Quaternion.average(*quats_r, weights=weights)
+        avg_l = Quaternion.average(*quats_l, weights=weights)
+        avg_r = Quaternion.average(*quats_r, weights=weights)
         np.testing.assert_allclose(q1.coordinates, avg_l.coordinates)
         np.testing.assert_allclose(q1.coordinates, avg_r.coordinates)
 
